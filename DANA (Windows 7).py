@@ -55,7 +55,14 @@ def DANA(directory):
             iturin.append(iturins)
             fengycin.append(fengycins)
             surfactin.append(surfactins)
+        
+        temp = [sum(x) for x in zip(iturin, fengycin)]
+        temp2 = [sum(y) for y in zip(temp, surfactin)]
 
+        df = pd.DataFrame({'Iturins': iturin, 'Fengycins': fengycin, 'Surfactins': surfactin, 'Total': temp2},
+                          index=file_names)
+        print(df)
+        
         # Plotting the I, F, S, and total lipopeptides.
         plt.bar(file_names, iturin)
         plt.xlabel('Samples')
@@ -78,9 +85,6 @@ def DANA(directory):
         plt.xticks(fontsize=7, rotation=90)
         plt.show()
 
-        temp = [sum(x) for x in zip(iturin, fengycin)]
-        temp2 = [sum(y) for y in zip(temp, surfactin)]
-
         plt.bar(file_names, temp2)
         plt.xlabel('Samples')
         plt.ylabel('Peak Area (mAU*min)')
@@ -88,8 +92,6 @@ def DANA(directory):
         plt.xticks(fontsize=7, rotation=90)
         plt.show()
 
-        df = pd.DataFrame({'Iturins': iturin, 'Fengycins': fengycin, 'Surfactins': surfactin, 'Total': temp2},
-                          index = file_names)
         df.plot.bar()
         plt.xlabel('Samples')
         plt.ylabel('Peak Area (mAU*min)')
