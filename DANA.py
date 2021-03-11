@@ -4,18 +4,19 @@ def DANA(directory):
     from pathlib import Path
     import pandas as pd
     import warnings
+    import xlrd
     warnings.filterwarnings('ignore')
 
     try:
         directory = str(directory)
 
-        directory_str = r'C:\\Users\\PS3ma\\Desktop\\{}\\'.format(directory)
+        directory_str = 'C:\\Users\\Bioconsortia Inc\\Desktop\\HPLC Export Files\\{}\\'.format(directory)
         l = os.listdir(directory_str)
         file_names = [x.split('.')[0] for x in l if x.endswith('.xls')]
 
-        #Grabbing all sample names within the directory
+        # Grabbing all sample names within the directory
         samples_list = []
-        #pathlist = Path(directory_str).rglob('*.xls')
+        # pathlist = Path(directory_str).rglob('*.xls')
         pathnames = []
         for item in l:
             if item.endswith('.xls'):
@@ -23,7 +24,10 @@ def DANA(directory):
 
         for path in pathnames:
             path_in_str = str(path)
-            samples_list.append(pd.read_excel(path_in_str, 'Integration')[41:])
+            wb = xlrd.open_workbook(path_in_str, logfile = open(os.devnull, 'w'))
+            samples_list.append(pd.read_excel(wb, 'Integration')[41:])
+
+
     except:
         print('Sorry, I could not find that directory')
 
@@ -52,6 +56,15 @@ def DANA(directory):
             fengycin.append(fengycins)
             surfactin.append(surfactins)
 
+        temp = [sum(x) for x in zip(iturin, fengycin)]
+        temp2 = [sum(y) for y in zip(temp, surfactin)]
+
+        df = pd.DataFrame({'Iturins': iturin, 'Fengycins': fengycin, 'Surfactins': surfactin, 'Total': temp2},
+                          index=file_names)
+        print(df)
+
+
+
         # Plotting the I, F, S, and total lipopeptides.
         plt.bar(file_names, iturin)
         plt.xlabel('Samples')
@@ -74,9 +87,6 @@ def DANA(directory):
         plt.xticks(fontsize=7, rotation=90)
         plt.show()
 
-        temp = [sum(x) for x in zip(iturin, fengycin)]
-        temp2 = [sum(y) for y in zip(temp, surfactin)]
-
         plt.bar(file_names, temp2)
         plt.xlabel('Samples')
         plt.ylabel('Peak Area (mAU*min)')
@@ -84,16 +94,16 @@ def DANA(directory):
         plt.xticks(fontsize=7, rotation=90)
         plt.show()
 
-        df = pd.DataFrame({'Iturins': iturin, 'Fengycins': fengycin, 'Surfactins': surfactin, 'Total': temp2},
-                          index=file_names)
         df.plot.bar()
         plt.xlabel('Samples')
         plt.ylabel('Peak Area (mAU*min)')
+        plt.title('All Peak Areas per Sample')
         plt.xticks(fontsize=7, rotation=90)
         plt.show()
 
     except:
         print('Something went wrong!')
+
 
 
 def main():
@@ -103,9 +113,9 @@ def main():
         directory = input('Please enter the folder name where your HPLC excel data is stored: ')
         DANA(directory)
         mid_var = input('Would you like to analyze another experiment? (Y/N) ')
-        if mid_var == 'y'.upper() or mid_var == 'yes'.upper() or mid_var == 'Yes':
+        if mid_var.upper() == 'Y' or mid_var.upper() == 'YES'.upper() or mid_var == 'Yes':
             continue
-        elif mid_var == 'n'.upper() or mid_var == 'no'.upper() or mid_var == 'No':
+        elif mid_var.upper() == 'N' or mid_var.upper() == 'NO'.upper() or mid_var == 'No':
             count += 1
         else:
             print("I'll pretend your said yes.")
@@ -113,3 +123,10 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
+
