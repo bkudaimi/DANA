@@ -1,3 +1,7 @@
+#DANA v1.3
+#Copyright 2021 Bilal Kudaimi
+#Program for fetching exported data from HPLC columns and automatically generating bar charts
+
 def DANA(directory):
     import matplotlib.pyplot as plt
     import os
